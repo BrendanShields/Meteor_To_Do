@@ -1,19 +1,14 @@
 import React, { Component } from 'react'; //destructured component and import react
 import Task from './Task'
+import { withTracker } from 'meteor/react-meteor-data'; //grabs data from database
 
-export default class App extends Component {
-    getTasks(){
-        return [
-            {_id: 1, text: 'This is the first task'},
-            {_id: 1, text: 'This is the second task'},
-            {_id: 1, text: 'This is the third task'},
-            {_id: 1, text: 'This is the fourth task'},
-            
-        ]
-    }
+import { Tasks } from '../api/tasks.js' // Mongo Collection
+
+
+class App extends Component {
 
     renderTasks(){
-        return this.getTasks().map((task) => (
+        return this.props.tasks.map((task) => (
             <Task key={task._id} task={task} /> 
         ))
     }
@@ -31,3 +26,11 @@ export default class App extends Component {
         )
     }
 }
+
+// Magic:
+
+export default withTracker(() => { // first call returns a function, second one passes tasks.
+    return {
+        tasks: Tasks.find({}).fetch() // .find empty object is the same as .find all
+    };
+})(App) // returns a function that we call
